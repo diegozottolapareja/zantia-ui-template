@@ -1,6 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, TrendingDown, Wine, Package, Users, DollarSign } from 'lucide-react';
-import { motion } from 'motion/react';
+import { useNavigate } from 'react-router'
+import { ArrowLeft, TrendingUp, Wine, Package, Users, DollarSign } from 'lucide-react'
+import { motion } from 'motion/react'
+import { AppHeader } from '@/components/AppHeader'
+import { KPICard } from '@/components/KPICard'
 import {
   LineChart,
   Line,
@@ -82,49 +84,24 @@ export default function AdminAnalytics() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-gradient-to-r from-wine-purple to-wine-burgundy border-b border-wine-burgundy px-4 md:px-6 py-4 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
+      <AppHeader
+        variant="brand"
+        left={
           <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 flex items-center justify-center backdrop-blur-sm"
           >
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <h1 className="text-xl text-white">Análisis de Ventas</h1>
-        </div>
-      </header>
+        }
+        center={<h1 className="text-xl text-white">Análisis de Ventas</h1>}
+      />
 
       <main className="max-w-7xl mx-auto p-4 md:p-6 pb-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {kpis.map((kpi, index) => {
-            const Icon = kpi.icon;
-            return (
-              <motion.div
-                key={kpi.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-4 md:p-6 border border-border"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-wine-purple to-wine-burgundy flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      kpi.positive
-                        ? 'bg-success/10 text-success'
-                        : 'bg-destructive/10 text-destructive'
-                    }`}
-                  >
-                    {kpi.change}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground mb-1">{kpi.label}</p>
-                <p className="text-2xl md:text-3xl text-dark-graphite">{kpi.value}</p>
-              </motion.div>
-            );
-          })}
+          {kpis.map((kpi, index) => (
+            <KPICard key={kpi.label} label={kpi.label} value={kpi.value} change={kpi.change} positive={kpi.positive} Icon={kpi.icon} index={index} />
+          ))}
         </div>
 
         <motion.div
@@ -172,7 +149,7 @@ export default function AdminAnalytics() {
             <div className="space-y-4">
               {topWines.map((wine, index) => (
                 <div key={wine.name} className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-wine-purple/10 text-wine-purple flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -180,7 +157,7 @@ export default function AdminAnalytics() {
                     <p className="text-sm text-muted-foreground">{wine.sold} bottles</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-wine-purple">${wine.revenue.toLocaleString()}</p>
+                    <p className="text-primary">${wine.revenue.toLocaleString()}</p>
                   </div>
                 </div>
               ))}

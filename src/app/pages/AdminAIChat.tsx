@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Bot, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { ArrowLeft, Send, Bot, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { AppHeader } from '@/components/AppHeader'
+import { appConfig } from '@/config/appConfig'
 
 interface Message {
   id: string;
@@ -72,25 +74,25 @@ export default function AdminAIChat() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-gradient-to-r from-wine-purple to-wine-burgundy border-b border-wine-burgundy px-4 md:px-6 py-4 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 flex items-center justify-center backdrop-blur-sm"
-          >
+      <AppHeader
+        variant="brand"
+        left={
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 flex items-center justify-center backdrop-blur-sm">
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <div className="flex items-center gap-3 flex-1">
+        }
+        center={
+          <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg md:text-xl text-white">Wines ARG IA</h1>
+              <h1 className="text-lg md:text-xl text-white">{appConfig.APP_NAME} IA</h1>
               <p className="text-xs text-white/80">Siempre aquí para ayudar</p>
             </div>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-4">
@@ -111,7 +113,7 @@ export default function AdminAIChat() {
                 <div
                   className={`max-w-[80%] md:max-w-[70%] rounded-2xl p-4 md:p-5 ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-wine-purple to-wine-burgundy text-white'
+                      ? 'bg-gradient-to-r from-primary to-accent text-white'
                       : 'bg-white border border-border text-dark-graphite'
                   }`}
                 >
@@ -128,7 +130,7 @@ export default function AdminAIChat() {
                   </p>
                 </div>
                 {message.role === 'user' && (
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-wine-purple flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                     <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
                 )}
@@ -150,17 +152,17 @@ export default function AdminAIChat() {
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ repeat: Infinity, duration: 0.8, delay: 0 }}
-                    className="w-2 h-2 rounded-full bg-wine-purple"
+                    className="w-2 h-2 rounded-full bg-primary"
                   />
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ repeat: Infinity, duration: 0.8, delay: 0.2 }}
-                    className="w-2 h-2 rounded-full bg-wine-burgundy"
+                    className="w-2 h-2 rounded-full bg-accent"
                   />
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ repeat: Infinity, duration: 0.8, delay: 0.4 }}
-                    className="w-2 h-2 rounded-full bg-wine-violet"
+                    className="w-2 h-2 rounded-full bg-chart-3"
                   />
                 </div>
               </div>
@@ -178,12 +180,12 @@ export default function AdminAIChat() {
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && handleSend()}
               placeholder="Pregúntame sobre tu bodega..."
-              className="flex-1 px-4 md:px-6 py-3 md:py-4 bg-muted rounded-2xl focus:outline-none focus:ring-2 focus:ring-wine-purple"
+              className="flex-1 px-4 md:px-6 py-3 md:py-4 bg-muted rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isTyping}
-              className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-r from-wine-purple to-wine-burgundy text-white flex items-center justify-center hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               <Send className="w-5 h-5 md:w-6 md:h-6" />
             </button>

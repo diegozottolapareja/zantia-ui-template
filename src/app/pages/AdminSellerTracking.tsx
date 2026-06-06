@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, DollarSign, Package } from 'lucide-react';
-import { motion } from 'motion/react';
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { ArrowLeft, MapPin, Phone, DollarSign, Package } from 'lucide-react'
+import { motion } from 'motion/react'
+import { AppHeader } from '@/components/AppHeader'
 
 const sellers = [
   {
@@ -66,17 +67,15 @@ export default function AdminSellerTracking() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-gradient-to-r from-wine-purple to-wine-burgundy border-b border-wine-burgundy px-4 md:px-6 py-4 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 flex items-center justify-center backdrop-blur-sm"
-          >
+      <AppHeader
+        variant="brand"
+        left={
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 flex items-center justify-center backdrop-blur-sm">
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <h1 className="text-xl text-white">Seguimiento de Vendedores</h1>
-        </div>
-      </header>
+        }
+        center={<h1 className="text-xl text-white">Seguimiento de Vendedores</h1>}
+      />
 
       <main className="max-w-7xl mx-auto p-4 md:p-6">
         <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -101,8 +100,8 @@ export default function AdminSellerTracking() {
             className="bg-white rounded-2xl p-6 border border-border"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-wine-purple/10 flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-wine-purple" />
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-primary" />
               </div>
               <h3 className="text-muted-foreground">Ventas Totales</h3>
             </div>
@@ -116,8 +115,8 @@ export default function AdminSellerTracking() {
             className="bg-white rounded-2xl p-6 border border-border"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-wine-burgundy/10 flex items-center justify-center">
-                <Package className="w-5 h-5 text-wine-burgundy" />
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                <Package className="w-5 h-5 text-accent" />
               </div>
               <h3 className="text-muted-foreground">Botellas Vendidas</h3>
             </div>
@@ -132,7 +131,7 @@ export default function AdminSellerTracking() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-2 bg-white rounded-2xl overflow-hidden border border-border"
           >
-            <div className="h-[500px] md:h-[600px] bg-gradient-to-br from-wine-purple/5 to-wine-burgundy/5 relative">
+            <div className="h-[500px] md:h-[600px] bg-gradient-to-br from-primary/5 to-accent/5 relative">
               <div
                 className="absolute inset-0 bg-cover bg-center opacity-20"
                 style={{
@@ -180,7 +179,7 @@ export default function AdminSellerTracking() {
                       <p className="text-sm text-dark-graphite mb-1">{seller.name}</p>
                       <p className="text-xs text-muted-foreground mb-2">{seller.location.name}</p>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-wine-purple">${seller.sales.toLocaleString()}</span>
+                        <span className="text-primary">${seller.sales.toLocaleString()}</span>
                         <span className="text-muted-foreground">•</span>
                         <span className="text-muted-foreground">{seller.bottles} bottles</span>
                       </div>
@@ -204,8 +203,8 @@ export default function AdminSellerTracking() {
                 onClick={() => setSelectedSeller(seller.id)}
                 className={`bg-white rounded-2xl p-4 border-2 transition-all cursor-pointer ${
                   selectedSeller === seller.id
-                    ? 'border-wine-purple shadow-lg'
-                    : 'border-border hover:border-wine-purple/50'
+                    ? 'border-primary shadow-lg'
+                    : 'border-border hover:border-primary/50'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -228,7 +227,7 @@ export default function AdminSellerTracking() {
                       {seller.location.name}
                     </p>
                     <div className="flex items-center gap-3 text-xs">
-                      <span className="text-wine-purple">${seller.sales.toLocaleString()}</span>
+                      <span className="text-primary">${seller.sales.toLocaleString()}</span>
                       <span className="text-muted-foreground">{seller.bottles} bottles</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">{seller.lastActive}</p>

@@ -1,75 +1,261 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Wine, ShieldCheck, Fingerprint } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import logo from '../../imports/ChatGPT_Image_May_20__2026__12_08_26_PM.png';
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router'
+import { Wheat, ShieldCheck, Star, User, Eye, EyeOff, Fingerprint, AlertCircle } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { toast } from 'sonner'
+import { useAuth, isWebAuthnSupported, type LoginCredentials } from '../contexts/AuthContext'
+import { SplashScreen } from '@/components/SplashScreen'
+import { OptionCard } from '@/components/OptionCard'
+import { appConfig, type Role } from '@/config/appConfig'
+import logo from '/logo.svg'
+import ForgotPassword from './ForgotPassword'
 
-export default function Login() {
-  const navigate = useNavigate();
-  const [showSplash, setShowSplash] = useState(true);
-  const [authenticating, setAuthenticating] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'seller' | 'admin' | null>(null);
+// ─── Demo mode: role selector ─────────────────────────────────────────────────
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2200);
-    return () => clearTimeout(timer);
-  }, []);
+function DemoLogin() {
+  const { loginAsDemo } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname
 
-  const handleFaceIDLogin = (role: 'seller' | 'admin') => {
-    setSelectedRole(role);
-    setAuthenticating(true);
-
-    setTimeout(() => {
-      if (role === 'seller') {
-        navigate('/seller/sales');
-      } else {
-        navigate('/admin/dashboard');
-      }
-    }, 1800);
-  };
+  const handleSelect = (role: Role) => {
+    loginAsDemo(role)
+    navigate(from ?? roleDefaultRoute(role))
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1548] to-[#1a0a2e] flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"></div>
+    <div className="space-y-4">
+      <p className="text-center text-white/40 text-xs uppercase tracking-widest mb-6">Modo Demo — elegir rol</p>
+      <OptionCard
+        icon={<Wheat className="w-7 h-7 text-white" />}
+        title={appConfig.ROLES.corredor}
+        description="Matches, negociaciones y comisiones"
+        onClick={() => handleSelect('corredor')}
+      />
+      <OptionCard
+        icon={<User className="w-7 h-7 text-white" />}
+        title={appConfig.ROLES.comprador}
+        description="Marketplace de posiciones disponibles"
+        onClick={() => handleSelect('comprador')}
+        accentClass="from-green-500/0 via-green-500/10 to-green-500/0 group-hover:via-green-500/20"
+      />
+      <OptionCard
+        icon={<ShieldCheck className="w-7 h-7 text-white" />}
+        title={appConfig.ROLES.admin}
+        description="Panel de control y parámetros"
+        onClick={() => handleSelect('admin')}
+        accentClass="from-blue-500/0 via-blue-500/10 to-blue-500/0 group-hover:via-blue-500/20"
+      />
+      {/* SuperAdmin: acceso discreto — no es un rol operativo */}
+      <button
+        onClick={() => handleSelect('superAdmin')}
+        className="w-full flex items-center justify-center gap-2 py-2.5 text-white/25 hover:text-white/50 text-xs transition-colors"
+      >
+        <Star className="w-3.5 h-3.5" />
+        Acceso administración de plataforma
+      </button>
+    </div>
+  )
+}
+
+// ─── Real login: email + password + biometrics ────────────────────────────────
+
+function RealLogin() {
+  const { login, loginWithBiometrics } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState<Role>('corredor')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [biometricLoading, setBiometricLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showForgot, setShowForgot] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !password) {
+      setError('Completá todos los campos')
+      return
+    }
+    setError('')
+    setLoading(true)
+    try {
+      const creds: LoginCredentials = { email, password, role }
+      await login(creds)
+      navigate(from ?? roleDefaultRoute(role))
+    } catch {
+      setError('Email o contraseña incorrectos')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBiometric = async () => {
+    setBiometricLoading(true)
+    try {
+      await loginWithBiometrics(role)
+      navigate(from ?? roleDefaultRoute(role))
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error de autenticación biométrica'
+      toast.error(msg)
+    } finally {
+      setBiometricLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Role selector */}
+        <div className="flex gap-2 p-1 bg-white/10 rounded-2xl">
+          {(['corredor', 'admin'] as Role[]).map(r => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRole(r)}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                role === r ? 'bg-white text-surface-dark shadow' : 'text-white/60 hover:text-white'
+              }`}
+            >
+              {appConfig.ROLES[r]}
+            </button>
+          ))}
+        </div>
+
+        {/* Email */}
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            autoComplete="email"
+            className="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Contraseña"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            autoComplete="current-password"
+            className="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm pr-12"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(v => !v)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Error */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="flex items-center gap-2 text-red-300 text-sm"
+            >
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Submit */}
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 bg-white text-surface-dark rounded-2xl font-bold text-base disabled:opacity-60 hover:bg-white/90 transition-all duration-200 shadow-lg"
+        >
+          {loading ? 'Ingresando...' : 'Ingresar'}
+        </motion.button>
+
+        {/* Biometrics */}
+        {isWebAuthnSupported() && (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            onClick={handleBiometric}
+            disabled={biometricLoading}
+            className="w-full py-4 bg-white/10 border border-white/20 rounded-2xl text-white font-medium text-sm disabled:opacity-60 hover:bg-white/15 transition-all duration-200 flex items-center justify-center gap-3"
+          >
+            <Fingerprint className={`w-5 h-5 ${biometricLoading ? 'animate-pulse' : ''}`} />
+            {biometricLoading ? 'Verificando biometría...' : 'Usar Face ID / Huella digital'}
+          </motion.button>
+        )}
+
+        {/* Forgot password */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setShowForgot(true)}
+            className="text-white/40 hover:text-white/70 text-xs transition-colors"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+      </form>
+
+      <ForgotPassword open={showForgot} onClose={() => setShowForgot(false)} />
+    </>
+  )
+}
+
+// ─── Route helpers ────────────────────────────────────────────────────────────
+
+function roleDefaultRoute(role: Role): string {
+  switch (role) {
+    case 'superAdmin':
+      return '/super/dashboard'
+    case 'admin':
+      return '/admin/dashboard'
+    case 'comprador':
+      return '/marketplace'
+    case 'corredor':
+    case 'visitor':
+    default:
+      return '/dashboard'
+  }
+}
+
+// ─── Main Login page ──────────────────────────────────────────────────────────
+
+export default function Login() {
+  const { isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
+  const [showSplash, setShowSplash] = useState(true)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(roleDefaultRoute(user.role), { replace: true })
+    }
+  }, [isAuthenticated, user, navigate])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 2200)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-surface-dark via-surface-dark-mid to-surface-dark flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20" />
 
       <AnimatePresence mode="wait">
         {showSplash ? (
-          <motion.div
-            key="splash"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center z-10"
-          >
-            <motion.div
-              animate={{
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="mb-8"
-            >
-              <img
-                src={logo}
-                alt="Wines ARG"
-                className="w-80 h-auto mx-auto drop-shadow-[0_0_30px_rgba(255,255,255,0.3)] rounded-3xl"
-              />
-            </motion.div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-white/50 text-sm tracking-[0.3em] uppercase"
-            >
-              Plataforma Premium de Vinos
-            </motion.p>
-          </motion.div>
+          <SplashScreen logo={logo} appName={appConfig.APP_NAME} tagline={appConfig.APP_TAGLINE} />
         ) : (
           <motion.div
             key="login"
@@ -78,87 +264,19 @@ export default function Login() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-md z-10"
           >
-            <div className="text-center mb-14">
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src={logo}
-                  alt="Wines ARG"
-                  className="w-56 h-auto rounded-2xl"
-                />
-              </div>
+            <div className="text-center mb-10">
+              <img src={logo} alt={appConfig.APP_NAME} className="w-48 h-auto rounded-2xl mx-auto mb-4" />
               <p className="text-white/50 text-sm tracking-wide">Bienvenido</p>
             </div>
 
-            <div className="space-y-5">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleFaceIDLogin('seller')}
-                disabled={authenticating}
-                className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-7 hover:bg-white/15 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)] disabled:opacity-50 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 group-hover:via-purple-500/20 transition-all duration-500"></div>
-                <div className="flex items-center gap-5 relative">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg">
-                    <Wine className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <h3 className="text-xl font-medium text-white mb-1">Ingresar como Vendedor</h3>
-                    <p className="text-white/50 text-sm">Acceso a catálogo y ventas</p>
-                  </div>
-                  <Fingerprint className={`w-7 h-7 text-white/30 ${authenticating && selectedRole === 'seller' ? 'animate-pulse' : ''}`} />
-                </div>
-              </motion.button>
+            {appConfig.DEMO_MODE ? <DemoLogin /> : <RealLogin />}
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleFaceIDLogin('admin')}
-                disabled={authenticating}
-                className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-7 hover:bg-white/15 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)] disabled:opacity-50 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 group-hover:via-blue-500/20 transition-all duration-500"></div>
-                <div className="flex items-center gap-5 relative">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-cyan-500/30 flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg">
-                    <ShieldCheck className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <h3 className="text-xl font-medium text-white mb-1">Ingresar como Administrador</h3>
-                    <p className="text-white/50 text-sm">Dashboard y análisis</p>
-                  </div>
-                  <Fingerprint className={`w-7 h-7 text-white/30 ${authenticating && selectedRole === 'admin' ? 'animate-pulse' : ''}`} />
-                </div>
-              </motion.button>
-            </div>
-
-            <AnimatePresence>
-              {authenticating && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-10 text-center"
-                >
-                  <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-7 py-4 shadow-lg">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                    >
-                      <Fingerprint className="w-5 h-5 text-white" />
-                    </motion.div>
-                    <span className="text-white/90 text-sm font-medium">Autenticando...</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <p className="text-center text-white/30 text-xs mt-14 tracking-wide">
-              Seguridad con Face ID • Toca para autenticar
+            <p className="text-center text-white/20 text-xs mt-10 tracking-wide">
+              {appConfig.APP_NAME} · {appConfig.APP_TAGLINE}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
