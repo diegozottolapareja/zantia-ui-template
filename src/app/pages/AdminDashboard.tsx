@@ -19,9 +19,9 @@ const cards = [
 
 const quickStats = [
   { label: 'Ventas Hoy',              value: '$45.200', change: '+12,5%', Icon: TrendingUp,  positive: true },
-  { label: `${appConfig.ROLES.operative}s Activos`, value: '8',  change: '2 en línea', Icon: Users, positive: true },
+  { label: `${appConfig.ROLES.corredor}s Activos`, value: '8',  change: '2 en línea', Icon: Users, positive: true },
   { label: 'Stock Bajo',              value: '3',       change: 'Necesita atención', Icon: AlertCircle, positive: false },
-  { label: `${appConfig.ITEM_NAME_PLURAL} Vendidos`, value: '142', change: '+23 hoy', Icon: Package, positive: true },
+  { label: `${appConfig.ENTITY_NAME_PLURAL} Vendidos`, value: '142', change: '+23 hoy', Icon: Package, positive: true },
 ]
 
 export default function AdminDashboard() {

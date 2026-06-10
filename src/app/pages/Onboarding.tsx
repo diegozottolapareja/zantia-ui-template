@@ -14,7 +14,7 @@ const STEPS = [
   {
     Icon: ShoppingBag,
     title: `Explorá el catálogo`,
-    description: `Accedé a todos los ${appConfig.ITEM_NAME_PLURAL.toLowerCase()} disponibles, consultá stock y precio en tiempo real, y agregá al carrito con un tap.`,
+    description: `Accedé a todos los ${appConfig.ENTITY_NAME_PLURAL.toLowerCase()} disponibles, consultá stock y precio en tiempo real, y agregá al carrito con un tap.`,
     color: 'from-purple-500 to-primary',
   },
   {

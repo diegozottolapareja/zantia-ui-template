@@ -2,19 +2,11 @@ import { Navigate, useLocation } from 'react-router'
 import type { ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import type { Role } from '@/config/appConfig'
+import { getDefaultRoute } from '@/config/navigationConfig'
 
 interface PrivateRouteProps {
   children: ReactNode
   allowedRoles?: Role[]
-}
-
-const ADMIN_ROLES: Role[] = ['admin', 'superAdmin']
-
-function roleDefaultRoute(role: Role): string {
-  if (role === 'superAdmin') return '/super/dashboard'
-  if (ADMIN_ROLES.includes(role)) return '/admin/dashboard'
-  if (role === 'comprador') return '/marketplace'
-  return '/dashboard'
 }
 
 export function PrivateRoute({ children, allowedRoles }: PrivateRouteProps) {
@@ -31,16 +23,19 @@ export function PrivateRoute({ children, allowedRoles }: PrivateRouteProps) {
     return <Navigate to="/unauthorized" replace />
   }
 
+  // Redirigir a la ruta default del rol si intenta acceder a una sección no permitida.
+  // La lógica de qué ruta corresponde a cada rol vive en navigationConfig.ts.
   const path = location.pathname
-  if (path.startsWith('/admin/') && !ADMIN_ROLES.includes(user.role)) {
-    return <Navigate to={roleDefaultRoute(user.role)} replace />
+  const defaultRoute = getDefaultRoute(user.role)
+
+  if (path.startsWith('/admin/') && user.role !== 'admin' && user.role !== 'superAdmin') {
+    return <Navigate to={defaultRoute} replace />
   }
   if (path.startsWith('/super/') && user.role !== 'superAdmin') {
-    return <Navigate to={roleDefaultRoute(user.role)} replace />
+    return <Navigate to={defaultRoute} replace />
   }
-  // Comprador can't access broker routes
   if (path.startsWith('/dashboard') && user.role === 'comprador') {
-    return <Navigate to="/marketplace" replace />
+    return <Navigate to={defaultRoute} replace />
   }
 
   return <>{children}</>

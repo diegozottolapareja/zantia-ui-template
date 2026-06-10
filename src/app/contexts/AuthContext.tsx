@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { type Role } from '@/config/appConfig'
+import { hasPermission, type Permission } from '@/config/rolesConfig'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,6 +18,8 @@ interface AuthContextType {
   user: AuthUser | null
   isAuthenticated: boolean
   isLoading: boolean
+  /** Verifica si el usuario tiene un permiso específico. Preferir sobre chequear user.role. */
+  can: (permission: Permission) => boolean
   login: (credentials: LoginCredentials) => Promise<void>
   loginWithBiometrics: (role: Role) => Promise<void>
   loginAsDemo: (role: Role) => void
@@ -29,7 +32,7 @@ export interface LoginCredentials {
   role: Role
 }
 
-// ─── Demo users — one per role ────────────────────────────────────────────────
+// ─── Demo users — uno por rol ──────────────────────────────────────────────────
 
 const DEMO_USERS: Record<Role, AuthUser> = {
   superAdmin: {
@@ -37,7 +40,7 @@ const DEMO_USERS: Record<Role, AuthUser> = {
     name: 'Super Admin',
     email: 'superadmin@demo.com',
     role: 'superAdmin',
-    tenantId: '*',            // superAdmin sees all tenants
+    tenantId: '*',
     permissions: ['*'],
     avatarUrl: 'https://i.pravatar.cc/300?img=1',
   },
@@ -47,7 +50,13 @@ const DEMO_USERS: Record<Role, AuthUser> = {
     email: 'admin@demo.com',
     role: 'admin',
     tenantId: 'tenant-001',
-    permissions: ['catalog:read', 'catalog:write', 'users:read', 'analytics:read'],
+    permissions: [
+      'entities:read', 'entities:write', 'entities:delete',
+      'operations:read', 'operations:write',
+      'users:read', 'users:manage',
+      'analytics:read', 'reports:read',
+      'settings:read', 'settings:write',
+    ],
     avatarUrl: 'https://i.pravatar.cc/300?img=45',
   },
   corredor: {
@@ -56,7 +65,7 @@ const DEMO_USERS: Record<Role, AuthUser> = {
     email: 'corredor@demo.com',
     role: 'corredor',
     tenantId: 'tenant-001',
-    permissions: ['catalog:read', 'catalog:write', 'sales:write'],
+    permissions: ['entities:read', 'entities:write', 'operations:read', 'operations:write', 'catalog:read'],
     avatarUrl: 'https://i.pravatar.cc/300?img=12',
   },
   comprador: {
@@ -105,28 +114,21 @@ export function isWebAuthnSupported(): boolean {
   return typeof window !== 'undefined' && !!window.PublicKeyCredential
 }
 
-async function webAuthnAuthenticate(userId: string): Promise<boolean> {
-  // Registration: store a credential for this user on first biometric login
-  // Authentication: verify the stored credential
-  // This is a template scaffold — wire to your backend's /auth/webauthn/* endpoints
-  // For now, simulates a successful assertion after the platform dialog
+async function webAuthnAuthenticate(_userId: string): Promise<boolean> {
+  // Scaffold — conectar a endpoints /auth/webauthn/* del backend real
   try {
     const challenge = crypto.getRandomValues(new Uint8Array(32))
-
     const credential = await navigator.credentials.get({
       publicKey: {
         challenge,
         rpId: window.location.hostname,
         userVerification: 'required',
         timeout: 60000,
-        allowCredentials: [],    // empty = any registered credential for this device
+        allowCredentials: [],
       },
     })
-
     return !!credential
   } catch (err) {
-    // NotAllowedError = user cancelled or no credential registered
-    // In that case we fall back to password login — caller handles this
     console.warn('[WebAuthn]', err)
     return false
   }
@@ -140,23 +142,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Restore session on mount
   useEffect(() => {
     const stored = loadSession()
     if (stored) setUser(stored)
     setIsLoading(false)
   }, [])
 
-  const login = async ({ email, password, role }: LoginCredentials) => {
-    // TODO: replace with real API call: POST /auth/login { email, password, role }
-    // Expect response: { user: AuthUser, token: string }
-    // Store token in httpOnly cookie or Authorization header
+  // Verifica si el usuario actual tiene un permiso. Usar esto en lugar de comparar user.role.
+  const can = useCallback((permission: Permission): boolean => {
+    if (!user) return false
+    return hasPermission(user.permissions, permission)
+  }, [user])
 
-    // Demo stub — simulates network delay
+  const login = async ({ email, password: _password, role }: LoginCredentials) => {
+    // TODO: reemplazar con POST /auth/login { email, password, role }
+    // Esperar respuesta: { user: AuthUser, token: string }
     await new Promise(r => setTimeout(r, 800))
-
-    // In a real implementation, validate credentials against backend here.
-    // We simulate success by picking the demo user for the selected role.
     const loggedIn: AuthUser = { ...DEMO_USERS[role], email }
     setUser(loggedIn)
     saveSession(loggedIn)
@@ -165,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithBiometrics = async (role: Role) => {
     const demoUser = DEMO_USERS[role]
     const ok = await webAuthnAuthenticate(demoUser.id)
-    if (!ok) throw new Error('Biometric authentication failed or cancelled')
+    if (!ok) throw new Error('Autenticación biométrica fallida o cancelada')
     setUser(demoUser)
     saveSession(demoUser)
   }
@@ -182,7 +183,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, loginWithBiometrics, loginAsDemo, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, can, login, loginWithBiometrics, loginAsDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )
