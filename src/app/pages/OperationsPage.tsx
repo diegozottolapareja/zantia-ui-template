@@ -4,8 +4,8 @@ import { ArrowLeft, TrendingUp, ChevronRight, Wheat, Clock, CheckCircle, AlertCi
 import { motion } from 'motion/react'
 import { AppHeader } from '@/components/AppHeader'
 import { BottomNav, type NavItem } from '@/components/BottomNav'
-import { MOCK_NEGOCIACIONES, ESTADO_NEG_CONFIG, PENDIENTE_DE_CONFIG, type EstadoNegociacion } from '@/data/mock/operaciones'
-import { PRODUCTO_CONFIG } from '@/data/mock/tipos'
+import { MOCK_NEGOCIACIONES, ESTADO_NEG_CONFIG, PENDIENTE_DE_CONFIG, type EstadoNegociacion } from '@/modules/grains/data/operaciones'
+import { PRODUCTO_CONFIG } from '@/modules/grains/data/tipos'
 import { LayoutDashboard, Wheat as WheatIcon, Calculator, ClipboardList, Settings } from 'lucide-react'
 
 function fmt(n: number) { return n.toLocaleString('en-US', { maximumFractionDigits: 0 }) }

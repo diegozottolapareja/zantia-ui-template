@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { Toaster } from 'sonner'
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './contexts/AuthContext'
-import { ParametrosProvider } from './contexts/ParametrosContext'
+import { ParametrosProvider } from '@/modules/grains/ParametrosContext'
 import { PrivateRoute } from './components/PrivateRoute'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { InstallBanner } from '@/components/InstallBanner'

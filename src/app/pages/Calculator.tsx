@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router'
 import { ArrowLeft, Wheat, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { AppHeader } from '@/components/AppHeader'
-import { useParametros } from '../contexts/ParametrosContext'
-import { calcular } from '@/lib/calculator'
-import { PRODUCTO_CONFIG, type Producto } from '@/data/mock/tipos'
+import { useParametros } from '@/modules/grains/ParametrosContext'
+import { calcular } from '@/modules/grains/calculator'
+import { PRODUCTO_CONFIG, type Producto } from '@/modules/grains/data/tipos'
 
 const PRODUCTOS: Producto[] = ['soja', 'maiz', 'trigo', 'girasol', 'sorgo', 'cebada']
 

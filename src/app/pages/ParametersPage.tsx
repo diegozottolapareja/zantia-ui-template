@@ -4,8 +4,8 @@ import { ArrowLeft, RotateCcw, Save, AlertCircle } from 'lucide-react'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import { AppHeader } from '@/components/AppHeader'
-import { useParametros, PARAMETROS_DEFAULT } from '../contexts/ParametrosContext'
-import { PRODUCTO_CONFIG, type Producto } from '@/data/mock/tipos'
+import { useParametros, PARAMETROS_DEFAULT } from '@/modules/grains/ParametrosContext'
+import { PRODUCTO_CONFIG, type Producto } from '@/modules/grains/data/tipos'
 
 const PRODUCTOS = Object.keys(PRODUCTO_CONFIG) as Producto[]
 

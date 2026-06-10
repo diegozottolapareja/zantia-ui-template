@@ -6,9 +6,9 @@ import { toast } from 'sonner'
 import { AppHeader } from '@/components/AppHeader'
 import { StockBadge } from '@/components/StockBadge'
 import { EmptyState } from '@/components/EmptyState'
-import { MOCK_POSICIONES, type Posicion } from '@/data/mock/posiciones'
-import { MOCK_NECESIDADES, type Necesidad } from '@/data/mock/necesidades'
-import { PRODUCTO_CONFIG, PUERTO_LABEL, type Producto } from '@/data/mock/tipos'
+import { MOCK_POSICIONES, type Posicion } from '@/modules/grains/data/posiciones'
+import { MOCK_NECESIDADES, type Necesidad } from '@/modules/grains/data/necesidades'
+import { PRODUCTO_CONFIG, PUERTO_LABEL, type Producto } from '@/modules/grains/data/tipos'
 
 type Tab = 'posiciones' | 'necesidades'
 

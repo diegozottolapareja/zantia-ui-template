@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { Producto } from '@/data/mock/tipos'
+import type { Producto } from './data/tipos'
 
 export interface Parametros {
   // Retenciones por producto (fracción, ej: 0.24 = 24%)

@@ -4,12 +4,12 @@ import { ArrowLeft, Wheat, CheckCircle, AlertCircle, Phone, MessageCircle, Chevr
 import { motion, AnimatePresence } from 'motion/react'
 import { toast } from 'sonner'
 import { AppHeader } from '@/components/AppHeader'
-import { useParametros } from '../contexts/ParametrosContext'
-import { MOCK_POSICIONES } from '@/data/mock/posiciones'
-import { MOCK_NECESIDADES } from '@/data/mock/necesidades'
-import { MOCK_NEGOCIACIONES, ESTADO_NEG_CONFIG, PENDIENTE_DE_CONFIG, type EstadoNegociacion, type NotaNegociacion } from '@/data/mock/operaciones'
-import { calcularMatch } from '@/lib/calculator'
-import { PRODUCTO_CONFIG, PUERTO_LABEL } from '@/data/mock/tipos'
+import { useParametros } from '@/modules/grains/ParametrosContext'
+import { MOCK_POSICIONES } from '@/modules/grains/data/posiciones'
+import { MOCK_NECESIDADES } from '@/modules/grains/data/necesidades'
+import { MOCK_NEGOCIACIONES, ESTADO_NEG_CONFIG, PENDIENTE_DE_CONFIG, type EstadoNegociacion, type NotaNegociacion } from '@/modules/grains/data/operaciones'
+import { calcularMatch } from '@/modules/grains/calculator'
+import { PRODUCTO_CONFIG, PUERTO_LABEL } from '@/modules/grains/data/tipos'
 import { appConfig } from '@/config/appConfig'
 
 function fmt(n: number, decimals = 2) {

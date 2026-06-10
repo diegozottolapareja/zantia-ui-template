@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'motion/react'
 import { MapPin, Wheat, SlidersHorizontal, X, MessageCircle, Phone, ChevronDown, ChevronUp } from 'lucide-react'
 import { AppHeader } from '@/components/AppHeader'
 import { BottomNav, type NavItem } from '@/components/BottomNav'
-import { MOCK_POSICIONES, type Posicion } from '@/data/mock/posiciones'
-import { PRODUCTO_CONFIG, type Producto } from '@/data/mock/tipos'
+import { MOCK_POSICIONES, type Posicion } from '@/modules/grains/data/posiciones'
+import { PRODUCTO_CONFIG, type Producto } from '@/modules/grains/data/tipos'
 import { LayoutGrid, Search, Bell, Settings } from 'lucide-react'
 
 function fmt(n: number) { return n.toLocaleString('en-US', { maximumFractionDigits: 0 }) }
