@@ -13,7 +13,7 @@ export function InstallBanner() {
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
-    // Already installed or dismissed this session
+    if (!appConfig.FEATURES.PWA_INSTALL_PROMPT) return
     if (window.matchMedia('(display-mode: standalone)').matches) return
 
     const handler = (e: Event) => {

@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
-import { StockBadge } from './StockBadge'
-import { QuantitySelector } from './QuantitySelector'
+import { StatusBadge } from './StatusBadge'
+import { ValueSelector } from './ValueSelector'
 
 interface ItemCardProps {
   id: string
@@ -50,7 +50,7 @@ export function ItemCard({
               DB
             </span>
           )}
-          <StockBadge stock={availableStock} className="absolute top-3 right-3 z-10" />
+          <StatusBadge value={availableStock} className="absolute top-3 right-3 z-10" />
           <img
             src={image}
             alt={name}
@@ -64,7 +64,7 @@ export function ItemCard({
             $ {price.toLocaleString()}
           </p>
         </div>
-        <QuantitySelector
+        <ValueSelector
           value={quantity}
           onIncrement={onIncrement}
           onDecrement={onDecrement}

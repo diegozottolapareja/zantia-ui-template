@@ -8,10 +8,10 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { InstallBanner } from '@/components/InstallBanner'
 import { UpdateBanner } from '@/components/UpdateBanner'
 import Login from './pages/Login'
-import CorredorDashboard from './pages/CorredorDashboard'
-import MatchDetail from './pages/MatchDetail'
+import OperativeDashboard from './pages/OperativeDashboard'
+import OperationDetail from './pages/OperationDetail'
 import Calculator from './pages/Calculator'
-import PositionsPage from './pages/PositionsPage'
+import ListingsPage from './pages/ListingsPage'
 import OperationsPage from './pages/OperationsPage'
 import ParametersPage from './pages/ParametersPage'
 import AdminDashboard from './pages/AdminDashboard'
@@ -28,7 +28,7 @@ import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import TenantsPage from './pages/TenantsPage'
 import AuditLogPage from './pages/AuditLogPage'
 import PlatformSettingsPage from './pages/PlatformSettingsPage'
-import MarketplacePage from './pages/MarketplacePage'
+import CatalogPage from './pages/CatalogPage'
 
 function UnauthorizedPage() {
   const { logout } = useAuth()
@@ -60,15 +60,15 @@ export default function App() {
               <Route path="/" element={<Login />} />
               <Route path="/onboarding" element={<Onboarding />} />
 
-              {/* Corredor routes */}
-              <Route path="/dashboard"   element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><CorredorDashboard /></PrivateRoute>} />
-              <Route path="/match"       element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><MatchDetail /></PrivateRoute>} />
+              {/* Operative routes (corredor) */}
+              <Route path="/dashboard"   element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><OperativeDashboard /></PrivateRoute>} />
+              <Route path="/match"       element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><OperationDetail /></PrivateRoute>} />
               <Route path="/calculadora" element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><Calculator /></PrivateRoute>} />
-              <Route path="/posiciones"  element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><PositionsPage /></PrivateRoute>} />
+              <Route path="/posiciones"  element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><ListingsPage /></PrivateRoute>} />
               <Route path="/operaciones" element={<PrivateRoute allowedRoles={['corredor', 'superAdmin', 'admin']}><OperationsPage /></PrivateRoute>} />
 
-              {/* Comprador routes */}
-              <Route path="/marketplace" element={<PrivateRoute allowedRoles={['comprador', 'superAdmin', 'admin']}><MarketplacePage /></PrivateRoute>} />
+              {/* Customer routes (comprador) */}
+              <Route path="/marketplace" element={<PrivateRoute allowedRoles={['comprador', 'superAdmin', 'admin']}><CatalogPage /></PrivateRoute>} />
 
               {/* Admin routes */}
               <Route path="/admin/dashboard"  element={<PrivateRoute allowedRoles={['admin', 'superAdmin']}><AdminDashboard /></PrivateRoute>} />
