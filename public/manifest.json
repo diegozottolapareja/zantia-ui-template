@@ -1,52 +1,24 @@
 {
-  "name": "Grainflow",
-  "short_name": "Grainflow",
-  "description": "Calculadora de márgenes en base a las diferentes variables",
+  "name": "ORIGEN",
+  "short_name": "ORIGEN",
+  "description": "Gestión de clases, profesores y alumnos para tu gimnasio",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0d2b0d",
-  "theme_color": "#2e7d32",
+  "background_color": "#1e1b4b",
+  "theme_color": "#4f46e5",
   "orientation": "portrait-primary",
   "lang": "es",
-  "categories": ["business", "productivity"],
+  "categories": ["business", "health", "fitness"],
   "icons": [
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
   ],
   "shortcuts": [
-    {
-      "name": "Dashboard",
-      "url": "/dashboard",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    }
+    { "name": "Agenda", "url": "/schedule", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Asistencias", "url": "/attendance", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

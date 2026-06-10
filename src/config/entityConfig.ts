@@ -1,14 +1,6 @@
-// ─── Configuración de entidad principal ───────────────────────────────────────
-// Define el schema de la entidad central del negocio.
-// Ejemplos: Posición (granos), Propiedad (inmobiliaria), Clase (gimnasio), Producto (catálogo).
-//
-// Para customizar para un nuevo rubro:
-//   1. Cambiar nameSingular / namePlural
-//   2. Definir los campos en `fields`
-//   3. Definir los estados en `statuses`
-//   4. Elegir qué campos van en tabla (tableColumns) y en card (cardFields)
+// ─── Entidad principal: Clase — ORIGEN Fitness ────────────────────────────────
 
-export type FieldType = 'text' | 'number' | 'currency' | 'date' | 'select' | 'badge' | 'phone' | 'textarea'
+export type FieldType = 'text' | 'number' | 'currency' | 'date' | 'time' | 'select' | 'badge' | 'phone' | 'textarea'
 
 export interface EntityField {
   key: string
@@ -20,41 +12,40 @@ export interface EntityField {
   showInCard?: boolean
   showInForm?: boolean
   required?: boolean
-  options?: Array<{ value: string; label: string }>  // para type: 'select'
+  options?: Array<{ value: string; label: string }>
 }
 
 export interface EntityStatus {
   key: string
   label: string
-  color: string   // clase de Tailwind o color CSS
+  color: string
   bgColor: string
 }
 
 export const entityConfig = {
-  // ── Nombres de la entidad ────────────────────────────────────────────────
-  nameSingular: 'Elemento',    // Cambiar: 'Posición', 'Propiedad', 'Alumno', 'Producto'
-  namePlural: 'Elementos',     // Cambiar: 'Posiciones', 'Propiedades', 'Alumnos', 'Productos'
+  nameSingular: 'Clase',
+  namePlural: 'Clases',
   primaryKey: 'id',
 
-  // ── Campos ───────────────────────────────────────────────────────────────
-  // Actualmente vacío — se completará en Fase 5 con schema real o genérico.
-  // Para granos, los campos están en data/mock/posiciones.ts (Posicion interface).
-  fields: [] as EntityField[],
+  fields: [
+    { key: 'nombre',    label: 'Nombre',           type: 'text',   required: true,  showInTable: true, showInCard: true, showInForm: true },
+    { key: 'profesor',  label: 'Profesor',          type: 'text',   required: true,  showInTable: true, showInCard: true, showInForm: true },
+    { key: 'fecha',     label: 'Fecha',             type: 'date',   required: true,  showInTable: true, showInCard: true, showInForm: true, sortable: true, filterable: true },
+    { key: 'hora',      label: 'Hora',              type: 'time',   required: true,  showInTable: true, showInCard: true, showInForm: true },
+    { key: 'duracion',  label: 'Duración (min)',    type: 'number', required: true,  showInTable: true, showInForm: true },
+    { key: 'capacidad', label: 'Capacidad',         type: 'number', required: true,  showInTable: true, showInCard: true, showInForm: true },
+    { key: 'cupos',     label: 'Cupos disponibles', type: 'number', showInTable: true, showInCard: true },
+    { key: 'estado',    label: 'Estado',            type: 'badge',  showInTable: true, showInCard: true, filterable: true },
+  ] as EntityField[],
 
-  // ── Estados posibles ─────────────────────────────────────────────────────
   statuses: [
-    { key: 'active',    label: 'Activo',    color: 'text-green-700',  bgColor: 'bg-green-100' },
-    { key: 'inactive',  label: 'Inactivo',  color: 'text-gray-600',   bgColor: 'bg-gray-100' },
-    { key: 'pending',   label: 'Pendiente', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
-    { key: 'closed',    label: 'Cerrado',   color: 'text-red-700',    bgColor: 'bg-red-100' },
+    { key: 'programada',  label: 'Programada',  color: 'text-blue-700',   bgColor: 'bg-blue-100' },
+    { key: 'en_curso',    label: 'En curso',    color: 'text-green-700',  bgColor: 'bg-green-100' },
+    { key: 'finalizada',  label: 'Finalizada',  color: 'text-gray-600',   bgColor: 'bg-gray-100' },
+    { key: 'cancelada',   label: 'Cancelada',   color: 'text-red-700',    bgColor: 'bg-red-100' },
   ] as EntityStatus[],
 
-  // ── Columnas visibles en tabla ───────────────────────────────────────────
-  tableColumns: [] as string[],   // keys de fields a mostrar en listado
-
-  // ── Campos visibles en card (mobile) ────────────────────────────────────
-  cardFields: [] as string[],     // keys de fields a mostrar en EntityCard
-
-  // ── Campos del formulario de creación/edición ────────────────────────────
-  formFields: [] as string[],     // keys de fields que aparecen en EntityForm
+  tableColumns: ['nombre', 'profesor', 'fecha', 'hora', 'capacidad', 'cupos', 'estado'],
+  cardFields:   ['profesor', 'hora', 'duracion', 'cupos'],
+  formFields:   ['nombre', 'profesor', 'fecha', 'hora', 'duracion', 'capacidad'],
 } as const

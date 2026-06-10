@@ -28,21 +28,21 @@ function DemoLogin() {
       <p className="text-center text-white/40 text-xs uppercase tracking-widest mb-6">Modo Demo — elegir rol</p>
       <OptionCard
         icon={<Wheat className="w-7 h-7 text-white" />}
-        title={appConfig.ROLES.corredor}
-        description="Matches, negociaciones y comisiones"
-        onClick={() => handleSelect('corredor')}
+        title={appConfig.ROLES.profesor}
+        description="Agenda, asistencias y clases del día"
+        onClick={() => handleSelect('profesor')}
       />
       <OptionCard
         icon={<User className="w-7 h-7 text-white" />}
-        title={appConfig.ROLES.comprador}
-        description="Marketplace de posiciones disponibles"
-        onClick={() => handleSelect('comprador')}
+        title={appConfig.ROLES.manager}
+        description="Reportes y métricas del negocio"
+        onClick={() => handleSelect('manager')}
         accentClass="from-green-500/0 via-green-500/10 to-green-500/0 group-hover:via-green-500/20"
       />
       <OptionCard
         icon={<ShieldCheck className="w-7 h-7 text-white" />}
         title={appConfig.ROLES.admin}
-        description="Panel de control y parámetros"
+        description="Panel de control y gestión general"
         onClick={() => handleSelect('admin')}
         accentClass="from-blue-500/0 via-blue-500/10 to-blue-500/0 group-hover:via-blue-500/20"
       />
@@ -68,7 +68,7 @@ function RealLogin() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<Role>('corredor')
+  const [role, setRole] = useState<Role>('profesor')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [biometricLoading, setBiometricLoading] = useState(false)
@@ -112,7 +112,7 @@ function RealLogin() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Role selector */}
         <div className="flex gap-2 p-1 bg-white/10 rounded-2xl">
-          {(['corredor', 'admin'] as Role[]).map(r => (
+          {(['profesor', 'admin'] as Role[]).map(r => (
             <button
               key={r}
               type="button"
@@ -221,10 +221,11 @@ function roleDefaultRoute(role: Role): string {
       return '/super/dashboard'
     case 'admin':
       return '/admin/dashboard'
-    case 'comprador':
-      return '/marketplace'
-    case 'corredor':
+    case 'manager':
+      return '/manager/dashboard'
     case 'visitor':
+      return '/schedule'
+    case 'profesor':
     default:
       return '/dashboard'
   }

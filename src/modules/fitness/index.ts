@@ -1,0 +1,5 @@
+export * from './data/profesores'
+export * from './data/alumnos'
+export * from './data/clases'
+export * from './data/asistencias'
+export * from './data/reservas'

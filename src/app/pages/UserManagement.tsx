@@ -18,19 +18,19 @@ interface ManagedUser {
 }
 
 const MOCK_USERS: ManagedUser[] = [
-  { id: 'u1', name: 'Carlos Martínez',   email: 'carlos@demo.com',  role: 'corredor',   active: true,  lastSeen: 'Hace 5 min',  avatar: 'https://i.pravatar.cc/60?img=12' },
-  { id: 'u2', name: 'María Rodríguez',   email: 'maria@demo.com',   role: 'admin',      active: true,  lastSeen: 'Hace 1 hora', avatar: 'https://i.pravatar.cc/60?img=45' },
-  { id: 'u3', name: 'Lucas Pérez',       email: 'lucas@demo.com',   role: 'corredor',   active: true,  lastSeen: 'Hace 2 días', avatar: 'https://i.pravatar.cc/60?img=33' },
-  { id: 'u4', name: 'Ana García',        email: 'ana@demo.com',     role: 'comprador',  active: true,  lastSeen: 'Hace 1 día',  avatar: 'https://i.pravatar.cc/60?img=49' },
-  { id: 'u5', name: 'Roberto Gómez',     email: 'roberto@demo.com', role: 'comprador',  active: false, lastSeen: 'Hace 2 sem',  avatar: 'https://i.pravatar.cc/60?img=15' },
-  { id: 'u6', name: 'Valentina Torres',  email: 'vale@demo.com',    role: 'visitor',    active: true,  lastSeen: 'Hoy',         avatar: 'https://i.pravatar.cc/60?img=47' },
+  { id: 'u1', name: 'Sofía Martínez',    email: 'sofia@origen.com',    role: 'profesor',  active: true,  lastSeen: 'Hace 5 min',  avatar: 'https://i.pravatar.cc/60?img=47' },
+  { id: 'u2', name: 'Laura Sánchez',     email: 'laura@origen.com',    role: 'admin',     active: true,  lastSeen: 'Hace 1 hora', avatar: 'https://i.pravatar.cc/60?img=45' },
+  { id: 'u3', name: 'Lucas Fernández',   email: 'lucas@origen.com',    role: 'profesor',  active: true,  lastSeen: 'Hace 2 días', avatar: 'https://i.pravatar.cc/60?img=15' },
+  { id: 'u4', name: 'Diego Herrera',     email: 'diego@origen.com',    role: 'manager',   active: true,  lastSeen: 'Hace 1 día',  avatar: 'https://i.pravatar.cc/60?img=33' },
+  { id: 'u5', name: 'Valentina Ruiz',    email: 'vale@origen.com',     role: 'profesor',  active: true,  lastSeen: 'Hace 30 min', avatar: 'https://i.pravatar.cc/60?img=44' },
+  { id: 'u6', name: 'Martín Gómez',      email: 'martin@origen.com',   role: 'profesor',  active: true,  lastSeen: 'Hoy',         avatar: 'https://i.pravatar.cc/60?img=13' },
 ]
 
 const ROLE_COLORS: Record<Role, string> = {
   superAdmin: 'bg-amber-100 text-amber-700',
   admin:      'bg-blue-100 text-blue-700',
-  corredor:   'bg-green-100 text-green-700',
-  comprador:  'bg-purple-100 text-purple-700',
+  profesor:   'bg-green-100 text-green-700',
+  manager:    'bg-purple-100 text-purple-700',
   visitor:    'bg-gray-100 text-gray-600',
 }
 

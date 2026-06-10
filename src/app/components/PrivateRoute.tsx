@@ -34,9 +34,5 @@ export function PrivateRoute({ children, allowedRoles }: PrivateRouteProps) {
   if (path.startsWith('/super/') && user.role !== 'superAdmin') {
     return <Navigate to={defaultRoute} replace />
   }
-  if (path.startsWith('/dashboard') && user.role === 'comprador') {
-    return <Navigate to={defaultRoute} replace />
-  }
-
   return <>{children}</>
 }

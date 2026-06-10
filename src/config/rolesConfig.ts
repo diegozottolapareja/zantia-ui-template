@@ -1,20 +1,20 @@
-// ─── Roles, permisos y módulos por rol ────────────────────────────────────────
-// Para customizar: agregar/quitar roles, ajustar permisos y módulos habilitados.
-// En código nuevo, preferir can(permission) sobre comparar user.role directamente.
+// ─── Roles, permisos y módulos — ORIGEN Fitness ───────────────────────────────
 
 export type Permission =
   | '*'
+  | 'dashboard:view'
+  | 'schedule:view'
+  | 'schedule:manage'
+  | 'attendance:create'
+  | 'attendance:review'
+  | 'attendance:edit'
   | 'entities:read'
   | 'entities:write'
   | 'entities:delete'
-  | 'operations:read'
-  | 'operations:write'
   | 'users:read'
   | 'users:manage'
-  | 'analytics:read'
-  | 'reports:read'
-  | 'catalog:read'
-  | 'catalog:write'
+  | 'reports:view'
+  | 'reports:export'
   | 'settings:read'
   | 'settings:write'
   | 'platform:manage'
@@ -22,8 +22,8 @@ export type Permission =
 export interface RoleConfig {
   label: string
   permissions: Permission[]
-  modules: string[]          // IDs de módulos habilitados ('*' = todos)
-  defaultRoute: string       // Ruta a la que se redirige al hacer login
+  modules: string[]
+  defaultRoute: string
 }
 
 export const rolesConfig: Record<string, RoleConfig> = {
@@ -37,45 +37,49 @@ export const rolesConfig: Record<string, RoleConfig> = {
   admin: {
     label: 'Administrador',
     permissions: [
+      'dashboard:view',
+      'schedule:view', 'schedule:manage',
+      'attendance:review', 'attendance:edit',
       'entities:read', 'entities:write', 'entities:delete',
-      'operations:read', 'operations:write',
       'users:read', 'users:manage',
-      'analytics:read', 'reports:read',
+      'reports:view', 'reports:export',
       'settings:read', 'settings:write',
     ],
-    modules: ['dashboard', 'entities', 'operations', 'users', 'analytics', 'notifications', 'profile', 'settings'],
+    modules: ['dashboard', 'schedule', 'attendance', 'entities', 'users', 'reports', 'notifications', 'profile', 'settings'],
     defaultRoute: '/admin/dashboard',
   },
 
-  // Rol operativo — en granos es el "corredor", en otros rubros puede ser agente, operador, vendedor
-  corredor: {
-    label: 'Operativo',
+  profesor: {
+    label: 'Profesor',
     permissions: [
-      'entities:read', 'entities:write',
-      'operations:read', 'operations:write',
-      'catalog:read',
+      'dashboard:view',
+      'schedule:view',
+      'attendance:create',
+      'entities:read',
     ],
-    modules: ['dashboard', 'entities', 'operations', 'calculator', 'notifications', 'profile', 'settings'],
+    modules: ['dashboard', 'schedule', 'attendance', 'notifications', 'profile'],
     defaultRoute: '/dashboard',
   },
 
-  // Rol cliente — en granos es el "comprador", en otros rubros puede ser cliente, alumno, huésped
-  comprador: {
-    label: 'Cliente',
-    permissions: ['catalog:read'],
-    modules: ['catalog', 'notifications', 'profile', 'settings'],
-    defaultRoute: '/marketplace',
+  manager: {
+    label: 'Manager',
+    permissions: [
+      'dashboard:view',
+      'schedule:view',
+      'entities:read',
+      'reports:view', 'reports:export',
+    ],
+    modules: ['dashboard', 'reports', 'schedule', 'notifications', 'profile'],
+    defaultRoute: '/manager/dashboard',
   },
 
   visitor: {
     label: 'Visitante',
-    permissions: ['catalog:read'],
-    modules: ['catalog'],
-    defaultRoute: '/marketplace',
+    permissions: ['schedule:view'],
+    modules: ['schedule'],
+    defaultRoute: '/schedule',
   },
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function hasPermission(userPermissions: string[], permission: Permission): boolean {
   return userPermissions.includes('*') || userPermissions.includes(permission)
